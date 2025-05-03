@@ -27,7 +27,7 @@ class CustomerService {
                     return FormateData({id: existingCustomer._id, token });
                 } 
             }
-    
+            
             return FormateData(null);
 
         } catch (err) {
@@ -50,7 +50,7 @@ class CustomerService {
             const existingCustomer = await this.repository.CreateCustomer({ email, password: userPassword, phone, salt});
             
             const token = await GenerateSignature({ email: email, _id: existingCustomer._id});
-
+            
             return FormateData({id: existingCustomer._id, token });
 
         }catch(err){
@@ -141,6 +141,7 @@ class CustomerService {
     async SubscribeEvents(payload){
  
         const { event, data } =  payload;
+        console.log('payload data',payload)
 
         const { userId, product, order, qty } = data;
 
@@ -157,6 +158,8 @@ class CustomerService {
                 break;
             case 'CREATE_ORDER':
                 this.ManageOrder(userId,order);
+            case 'TEST':
+                console.log('Test event received in customer service');
                 break;
             default:
                 break;
