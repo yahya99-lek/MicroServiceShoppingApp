@@ -21,7 +21,7 @@ module.exports = (app) => {
 
     // Log to show that the event was received — useful for debugging
     console.log(
-      "================= Shopping service received event ================"
+      "================= Customer service received event ================"
     );
 
     // Respond with the received payload as confirmation

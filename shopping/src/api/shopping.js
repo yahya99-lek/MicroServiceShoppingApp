@@ -8,7 +8,6 @@ module.exports = (app) => {
   app.post("/order", UserAuth, async (req, res, next) => {
     const { _id } = req.user; // 1. Get the ID of the authenticated user
     const { txnNumber } = req.body; // 2. Get the transaction number from the request
-
     try {
       const { data } = await service.PlaceOrder({ _id, txnNumber }); // 3. Create a new order
 

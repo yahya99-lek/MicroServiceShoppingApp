@@ -63,24 +63,19 @@ module.exports = (app) => {
     const { _id } = req.user;
 
     try {
-      //Get payload to send to customer service
       const { data } = await service.GetProductPayload(
         _id,
         { productId: req.body._id },
         "ADD_TO_WISHLIST"
       );
-      // 📝 Instead of directly calling the customer service (synchronous),
-      // we now publish an event using the PublishCustomerEvent utility function.
-      // This decouples the Product service from the Customer service.
-      //
-      // ✅ Advantages of this change:
-      // - Follows microservices best practices by enabling event-driven communication
-      // - Makes the services loosely coupled and independently scalable
-      // - Prevents the Product service from failing if the Customer service is down
-      // - Allows multiple services to listen to the same event (e.g., for logging, notifications, etc.)
+
       PublishCustomerEvent(data);
+
       return res.status(200).json(data.data.product);
-    } catch (err) {}
+    } catch (err) {
+      console.error("Error:", err);
+      return res.status(500).json({ error: "An unexpected error occurred" });
+    }
   });
 
   app.delete("/wishlist/:id", UserAuth, async (req, res, next) => {

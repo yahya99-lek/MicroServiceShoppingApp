@@ -1,9 +1,4 @@
-const {
-  CustomerModel,
-  ProductModel,
-  OrderModel,
-  CartModel,
-} = require("../models");
+const { OrderModel, CartModel } = require("../models");
 const { v4: uuidv4 } = require("uuid");
 const { APIError, BadRequestError } = require("../../utils/app-errors");
 
@@ -25,6 +20,7 @@ class ShoppingRepository {
   }
 
   async Cart(customerId) {
+    console.log("customerId", customerId);
     try {
       const cartItems = await CartModel.find({ customerId: customerId });
       if (cartItems) {
@@ -107,53 +103,39 @@ class ShoppingRepository {
   }
 
   async CreateNewOrder(customerId, txnId) {
-    //check transaction for payment Status
+    //required to verify payment through TxnId
 
-    try {
-      const cart = await CartModel.findOne(customerId);
+    const cart = await CartModel.findOne({ customerId: customerId });
+    console.log("cart", cart);
+    if (cart) {
+      let amount = 0;
 
-      if (cart) {
-        let amount = 0;
+      let cartItems = cart.items;
 
-        let cartItems = cart.items;
+      if (cartItems.length > 0) {
+        cartItems.map((item) => {
+          amount += parseInt(item.product.price) * parseInt(item.unit);
+        });
 
-        if (cartItems.length > 0) {
-          //process Order
-          cartItems.map((item) => {
-            amount += parseInt(item.product.price) * parseInt(item.unit);
-          });
+        const orderId = uuidv4();
 
-          const orderId = uuidv4();
+        const order = new OrderModel({
+          orderId,
+          customerId,
+          amount,
+          status: "received",
+          items: cartItems,
+        });
 
-          const order = new OrderModel({
-            orderId,
-            customerId,
-            amount,
-            txnId,
-            status: "received",
-            items: cartItems,
-          });
+        cart.items = [];
 
-          cart.items = [];
-
-          const orderResult = await order.save();
-
-          profile.orders.push(orderResult);
-          
-          await cart.save();
-
-          return orderResult;
-        }
+        const orderResult = await order.save();
+        await cart.save();
+        return orderResult;
       }
-
-      return {};
-    } catch (err) {
-      throw APIError(
-        "API Error",
-        STATUS_CODES.INTERNAL_ERROR,
-        "Unable to Find Category"
-      );
     }
+
+    return {};
   }
 }
 
