@@ -20,7 +20,6 @@ class ShoppingRepository {
   }
 
   async Cart(customerId) {
-    console.log("customerId", customerId);
     try {
       const cartItems = await CartModel.find({ customerId: customerId });
       if (cartItems) {
@@ -103,16 +102,16 @@ class ShoppingRepository {
   }
 
   async CreateNewOrder(customerId, txnId) {
-    //required to verify payment through TxnId
+    // required to verify payment through TxnId
 
     const cart = await CartModel.findOne({ customerId: customerId });
-    console.log("cart", cart);
+
     if (cart) {
       let amount = 0;
-
       let cartItems = cart.items;
 
       if (cartItems.length > 0) {
+        // process Order
         cartItems.map((item) => {
           amount += parseInt(item.product.price) * parseInt(item.unit);
         });
@@ -128,14 +127,26 @@ class ShoppingRepository {
         });
 
         cart.items = [];
+        const orderResult = await order.save(); // Assuming save() is the correct method to save the order
+        return orderResult;
+      } else {
+        // create an order even if the cart is empty
+        const orderId = uuidv4();
+        const order = new OrderModel({
+          orderId,
+          customerId,
+          amount: 0, // or some default value if needed
+          status: "received",
+          items: [],
+        });
 
-        const orderResult = await order.save();
-        await cart.save();
+        cart.items = [];
+        const orderResult = await order.save(); // Assuming save() is the correct method to save the order
         return orderResult;
       }
+    } else {
+      return {}; // Return an empty object if no cart is found
     }
-
-    return {};
   }
 }
 

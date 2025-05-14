@@ -18,7 +18,6 @@ class ShoppingService {
 
   async PlaceOrder(userInput) {
     const { _id, txnNumber } = userInput;
-
     // Verify the txn number with payment logs
 
     try {
@@ -54,7 +53,6 @@ class ShoppingService {
 
   async SubscribeEvents(payload) {
     const { event, data } = payload;
-    console.log("payload data", payload);
 
     const { userId, product, qty } = data;
 
