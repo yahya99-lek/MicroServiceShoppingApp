@@ -13,7 +13,6 @@ module.exports = (app, channel) => {
     const { txnNumber } = req.body; // 2. Get the transaction number from the request
     try {
       const { data } = await service.PlaceOrder({ _id, txnNumber }); // 3. Create a new order
-
       const payload = await service.GetOrderPayload(_id, data, "CREATE_ORDER"); // 4. Create an event payload for customer service
       PublishMessage(channel, CUSTOMER_BINDING_KEY, JSON.stringify(payload)); // 5. Send that payload to the customer service
 

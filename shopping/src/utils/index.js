@@ -83,7 +83,7 @@ module.exports.PublishMessage = async (channel, binding_key, message) => {
     // Publish the message to the exchange with the given binding key
     await channel.publish(
       EXCHANGE_NAME,
-      SHOPPING_BINDING_KEY,
+      binding_key,
       Buffer.from(message)
     );
     console.log("Message published to exchange:", message);

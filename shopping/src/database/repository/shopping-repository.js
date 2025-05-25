@@ -103,9 +103,8 @@ class ShoppingRepository {
 
   async CreateNewOrder(customerId, txnId) {
     // required to verify payment through TxnId
-
     const cart = await CartModel.findOne({ customerId: customerId });
-
+    console.log(cart);
     if (cart) {
       let amount = 0;
       let cartItems = cart.items;

@@ -7,7 +7,7 @@ class ShoppingService {
     this.repository = new ShoppingRepository();
   }
 
-  async GetCart(_id ) {
+  async GetCart(_id) {
     try {
       const cartItems = await this.repository.Cart(_id);
       return FormateData(cartItems);
@@ -19,7 +19,7 @@ class ShoppingService {
   async PlaceOrder(userInput) {
     const { _id, txnNumber } = userInput;
     // Verify the txn number with payment logs
-
+    console.log(txnNumber, _id);
     try {
       const orderResult = await this.repository.CreateNewOrder(_id, txnNumber);
       return FormateData(orderResult);
@@ -52,7 +52,6 @@ class ShoppingService {
   }
 
   async SubscribeEvents(payload) {
-
     payload = JSON.parse(payload);
     const { event, data } = payload;
 
@@ -70,7 +69,8 @@ class ShoppingService {
     }
   }
 
-  async GetOrderPayload(userId, { order, qty }, event) {
+  async GetOrderPayload(userId, order, event) {
+    console.log("order", order);
     if (order) {
       const payload = {
         event: event,
@@ -81,7 +81,7 @@ class ShoppingService {
       };
       return FormateData(payload);
     } else {
-      return FormateData({ error: "Prder not found" });
+      return FormateData({ error: "Order not found" });
     }
   }
 }

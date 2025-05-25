@@ -88,6 +88,7 @@ module.exports.SubscribeMessage = async (channel, service) => {
     channel.consume(appQueue.queue, (data) => {
       console.log("received data");
       console.log(data.content.toString()); // Convert Buffer to String
+      service.SubscribeEvents(data.content.toString()); // Call the SubscribeEvents method with the message data
       channel.ack(data); // Acknowledge receipt of the message
     });
   } catch (error) {
